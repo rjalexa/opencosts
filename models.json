@@ -1,0 +1,15 @@
+{
+  "search_term": "Gemini 2.5",
+  "model_count": 9,
+  "models": [
+    "Google: Gemini 2.5 Flash",
+    "Google: Gemini 2.5 Pro",
+    "Google: Gemini 2.5 Flash Lite Preview 06-17",
+    "Google: Gemini 2.5 Flash Lite",
+    "Google: Gemini 2.5 Pro Preview 06-05",
+    "Google: Gemini 2.5 Pro Preview 05-06",
+    "Google: Gemini 2.5 Pro Experimental",
+    "Google: Gemini 2.5 Flash Preview 05-20",
+    "Google: Gemini 2.5 Flash Preview 04-17"
+  ]
+}
