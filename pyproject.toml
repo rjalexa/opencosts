@@ -1,10 +1,12 @@
 [project]
 name = "opencosts"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.12"
+description = "A scraper for OpenRouter model costs."
+authors = [{ name = "Cline", email = "cline@example.com" }]
 dependencies = [
-    "playwright>=1.54.0",
-    "pytest>=8.4.1",
+    "requests",
 ]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
