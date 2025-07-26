@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app/src
+    volumes:
+      - ../data:/app/data
+      - ../frontend/public:/app/frontend/public
+    command: python src/api.py
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  scraper:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    command: python src/main.py
+    volumes:
+      - ../data:/app/data
+      - ../frontend/public:/app/frontend/public
+    environment:
+      - PYTHONPATH=/app/src

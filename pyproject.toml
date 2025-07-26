@@ -5,6 +5,8 @@ description = "A scraper for OpenRouter model costs."
 authors = [{ name = "Cline", email = "cline@example.com" }]
 dependencies = [
     "requests",
+    "fastapi",
+    "uvicorn[standard]",
 ]
 
 [build-system]

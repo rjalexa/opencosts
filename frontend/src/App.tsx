@@ -1,0 +1,41 @@
+import { useEffect, useState } from 'react';
+import { Container, Title, Loader, Center, Stack } from '@mantine/core';
+import { fetchData } from './services/api';
+import type { Author } from './services/api';
+import AuthorCard from './components/common/AuthorCard';
+
+function App() {
+  const [data, setData] = useState<Author[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getData = async () => {
+      const result = await fetchData();
+      setData(result);
+      setLoading(false);
+    };
+    getData();
+  }, []);
+
+  return (
+    <Container size="xl" py="md">
+      <Title order={1} mb="lg" ta="center">
+        OpenRouter Models
+      </Title>
+      
+      {loading ? (
+        <Center>
+          <Loader size="lg" />
+        </Center>
+      ) : (
+        <Stack gap="md">
+          {data.map(author => (
+            <AuthorCard key={author.name} author={author} />
+          ))}
+        </Stack>
+      )}
+    </Container>
+  );
+}
+
+export default App;
