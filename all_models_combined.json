@@ -1,0 +1,55 @@
+{
+  "search_summary": {
+    "Gemini 2.5": {
+      "model_count": 9,
+      "models": [
+        "Google: Gemini 2.5 Flash",
+        "Google: Gemini 2.5 Pro",
+        "Google: Gemini 2.5 Flash Lite Preview 06-17",
+        "Google: Gemini 2.5 Flash Lite",
+        "Google: Gemini 2.5 Pro Preview 06-05",
+        "Google: Gemini 2.5 Pro Preview 05-06",
+        "Google: Gemini 2.5 Pro Experimental",
+        "Google: Gemini 2.5 Flash Preview 05-20",
+        "Google: Gemini 2.5 Flash Preview 04-17"
+      ]
+    },
+    "Sonnet 4": {
+      "model_count": 3,
+      "models": [
+        "Anthropic: Claude Sonnet 4",
+        "Anthropic: Claude 3.5 Sonnet (2024-06-20)",
+        "Anthropic: Claude 3.5 Sonnet (2024-06-20) (self-moderated)"
+      ]
+    },
+    "Opus 4": {
+      "model_count": 1,
+      "models": [
+        "Anthropic: Claude Opus 4"
+      ]
+    },
+    "Kimi K2": {
+      "model_count": 2,
+      "models": [
+        "MoonshotAI: Kimi K2",
+        "MoonshotAI: Kimi K2 (free)"
+      ]
+    },
+    "Deepseek R1": {
+      "model_count": 9,
+      "models": [
+        "DeepSeek: R1 0528 (free)",
+        "DeepSeek: R1 (free)",
+        "TNG: DeepSeek R1T2 Chimera (free)",
+        "DeepSeek: R1 0528",
+        "DeepSeek: R1 Distill Llama 70B",
+        "TNG: DeepSeek R1T Chimera (free)",
+        "DeepSeek: R1",
+        "DeepSeek: Deepseek R1 0528 Qwen3 8B",
+        "DeepSeek: Deepseek R1 0528 Qwen3 8B (free)"
+      ]
+    }
+  },
+  "total_searches": 5,
+  "total_models_found": 24
+}

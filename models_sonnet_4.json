@@ -1,0 +1,9 @@
+{
+  "search_term": "Sonnet 4",
+  "model_count": 3,
+  "models": [
+    "Anthropic: Claude Sonnet 4",
+    "Anthropic: Claude 3.5 Sonnet (2024-06-20)",
+    "Anthropic: Claude 3.5 Sonnet (2024-06-20) (self-moderated)"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "search_term": "Deepseek R1",
+  "model_count": 9,
+  "models": [
+    "DeepSeek: R1 0528 (free)",
+    "DeepSeek: R1 (free)",
+    "TNG: DeepSeek R1T2 Chimera (free)",
+    "DeepSeek: R1 0528",
+    "DeepSeek: R1 Distill Llama 70B",
+    "TNG: DeepSeek R1T Chimera (free)",
+    "DeepSeek: R1",
+    "DeepSeek: Deepseek R1 0528 Qwen3 8B",
+    "DeepSeek: Deepseek R1 0528 Qwen3 8B (free)"
+  ]
+}
