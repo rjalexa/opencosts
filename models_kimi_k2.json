@@ -1,8 +1,10 @@
 {
   "search_term": "Kimi K2",
-  "model_count": 2,
+  "model_count": 4,
   "models": [
     "MoonshotAI: Kimi K2",
-    "MoonshotAI: Kimi K2 (free)"
+    "MoonshotAI: Kimi K2 (free)",
+    "MoonshotAI: Kimi K255.4B",
+    "MoonshotAI: Kimi K2 (free)13.4B"
   ]
 }

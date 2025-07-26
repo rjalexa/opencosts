@@ -1,7 +1,8 @@
 {
   "search_term": "Opus 4",
-  "model_count": 1,
+  "model_count": 2,
   "models": [
-    "Anthropic: Claude Opus 4"
+    "Anthropic: Claude Opus 4",
+    "Anthropic: Claude Opus"
   ]
 }
