@@ -11,7 +11,9 @@ function App() {
   useEffect(() => {
     const getData = async () => {
       const result = await fetchData();
-      setData(result);
+      // Sort authors alphabetically by name
+      const sortedResult = result.sort((a, b) => a.name.localeCompare(b.name));
+      setData(sortedResult);
       setLoading(false);
     };
     getData();

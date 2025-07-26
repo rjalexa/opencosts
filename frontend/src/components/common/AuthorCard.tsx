@@ -1,4 +1,4 @@
-import { Accordion, Stack } from '@mantine/core';
+import { Accordion, Stack, Badge, Group, Text } from '@mantine/core';
 import type { Author } from '../../services/api';
 import ModelCard from './ModelCard';
 
@@ -8,10 +8,17 @@ interface Props {
 
 const AuthorCard = ({ author }: Props) => {
   return (
-    <Accordion defaultValue={author.name}>
+    <Accordion>
       <Accordion.Item value={author.name}>
         <Accordion.Control>
-          {author.name}
+          <Group justify="space-between" wrap="nowrap">
+            <Text fw={500} size="lg">
+              {author.name}
+            </Text>
+            <Badge variant="light" size="sm">
+              {author.models.length} model{author.models.length !== 1 ? 's' : ''}
+            </Badge>
+          </Group>
         </Accordion.Control>
         <Accordion.Panel>
           <Stack gap="md">
