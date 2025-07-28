@@ -1,4 +1,6 @@
 Model name,Model URL,OpenRouter model ID,Provider,Context length,Price/input token,Price/output token,Latency,Throughput
+Z.AI: GLM 4.5,https://openrouter.ai/z-ai/glm-4.5,z-ai/glm-4.5,Z.AI,128000,0.0000006,0.0000022,,
+Z.AI: GLM 4.5 Air,https://openrouter.ai/z-ai/glm-4.5-air,z-ai/glm-4.5-air,Z.AI,128000,0.0000002,0.0000011,,
 Qwen: Qwen3 235B A22B Thinking 2507,https://openrouter.ai/qwen/qwen3-235b-a22b-thinking-2507,qwen/qwen3-235b-a22b-thinking-2507,Chutes,262144,0.0000001179,0.0000001179,,
 Qwen: Qwen3 235B A22B Thinking 2507,https://openrouter.ai/qwen/qwen3-235b-a22b-thinking-2507,qwen/qwen3-235b-a22b-thinking-2507,DeepInfra,262144,0.00000013,0.0000006,,
 Qwen: Qwen3 235B A22B Thinking 2507,https://openrouter.ai/qwen/qwen3-235b-a22b-thinking-2507,qwen/qwen3-235b-a22b-thinking-2507,Novita,131072,0.0000003,0.000003,,

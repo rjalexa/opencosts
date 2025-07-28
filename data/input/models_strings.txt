@@ -4,3 +4,4 @@ Opus 4
 Kimi K2
 Deepseek R1
 Qwen3
+GLM 4.5
