@@ -102,28 +102,32 @@
 
 ## Quick Start
 
-Get OpenCosts running in under 2 minutes:
+Get OpenCosts running in under 2 minutes using the provided Makefile:
 
 ```bash
 # Clone the repository
 git clone https://github.com/rjalexa/opencosts.git
 cd opencosts
 
-# Copy environment template
-cp .env.example .env
+# Ensure Docker is installed and running
+# The Makefile will attempt to start Docker if it's not running
 
-# Run the automated setup script (recommended)
-./scripts/run.sh
+# Start the application
+make run
 
 # Access the application
 open http://localhost:5173
 ```
 
-The `run.sh` script automatically generates fresh data, builds containers, and starts all services.
+The `make run` command performs the following steps:
+- Ensures Docker is running (and attempts to start it if needed)
+- Generates fresh data using the scraper service
+- Builds and starts the backend and frontend services
+- Opens the web application in your default browser
 
-**Alternative manual approach**:
+**Stopping the Application**:
 ```bash
-cd docker && docker compose up -d --build
+make stop
 ```
 
 ## Installation & Setup
@@ -134,7 +138,7 @@ cd docker && docker compose up -d --build
    ```bash
    git clone https://github.com/rjalexa/opencosts.git
    cd opencosts
-   cp .env.example .env
+   
    ```
 
 2. **Customize Search Terms** (Optional):
@@ -418,7 +422,7 @@ docker compose up -d --build
 **Production** (recommended):
 ```bash
 # Create production environment file
-cp .env.example .env.prod
+.prod
 
 # Deploy with production settings
 docker compose -f docker-compose.prod.yml up -d --build
