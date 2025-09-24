@@ -11,17 +11,30 @@ export interface AveragePrices {
  * @returns Object with average input and output prices
  */
 export const calculateAveragePrices = (providers: Provider[]): AveragePrices => {
+  // Helper function to parse price strings that may be formatted with $ signs
+  const parsePrice = (priceStr: string): number => {
+    if (!priceStr) return 0;
+    // Remove $ signs and any other formatting, then parse
+    const cleanedPrice = priceStr.replace(/[$,]/g, '');
+    return parseFloat(cleanedPrice);
+  };
+  
   // Filter out providers with missing or invalid price data
   const validProviders = providers.filter(provider => {
     const inputPrice = provider['Price/input token'];
     const outputPrice = provider['Price/output token'];
     
+    const parsedInputPrice = parsePrice(inputPrice);
+    const parsedOutputPrice = parsePrice(outputPrice);
+    
     // Check if prices are valid numbers
     return (
-      inputPrice && 
-      outputPrice && 
-      !isNaN(parseFloat(inputPrice)) && 
-      !isNaN(parseFloat(outputPrice))
+      inputPrice &&
+      outputPrice &&
+      !isNaN(parsedInputPrice) &&
+      !isNaN(parsedOutputPrice) &&
+      parsedInputPrice > 0 &&
+      parsedOutputPrice > 0
     );
   });
 
@@ -34,13 +47,13 @@ export const calculateAveragePrices = (providers: Provider[]): AveragePrices => 
 
   // Calculate sum of input and output prices
   const totalInputPrice = validProviders.reduce((sum, provider) => {
-    const price = parseFloat(provider['Price/input token']);
-    return sum + (isNaN(price) ? 0 : price);
+    const price = parsePrice(provider['Price/input token']);
+    return sum + price;
   }, 0);
 
   const totalOutputPrice = validProviders.reduce((sum, provider) => {
-    const price = parseFloat(provider['Price/output token']);
-    return sum + (isNaN(price) ? 0 : price);
+    const price = parsePrice(provider['Price/output token']);
+    return sum + price;
   }, 0);
 
   // Calculate averages

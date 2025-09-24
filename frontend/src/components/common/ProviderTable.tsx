@@ -34,10 +34,10 @@ const ProviderTable = ({ providers, comparisonModel }: Props) => {
     };
   }
 
-  // Format price for display
-  const formatPrice = (price: number): string => {
+  // Format price for comparison model (which are already in per-1M-tokens scale)
+  const formatComparisonPrice = (price: number): string => {
     if (price === 0) return '$0.00';
-    return `$${(price * 1000000).toFixed(2)}`;
+    return `$${price.toFixed(2)}`;
   };
 
   // Format ratio for display
@@ -71,10 +71,10 @@ const ProviderTable = ({ providers, comparisonModel }: Props) => {
               <Table.Td colSpan={1}>Compared to {comparisonData.modelName}</Table.Td>
               <Table.Td></Table.Td>
               <Table.Td>
-                {formatPrice(comparisonData.averageInputPrice)} ({formatRatio(comparisonData.inputRatio)})
+                {formatComparisonPrice(comparisonData.averageInputPrice)} ({formatRatio(comparisonData.inputRatio)})
               </Table.Td>
               <Table.Td>
-                {formatPrice(comparisonData.averageOutputPrice)} ({formatRatio(comparisonData.outputRatio)})
+                {formatComparisonPrice(comparisonData.averageOutputPrice)} ({formatRatio(comparisonData.outputRatio)})
               </Table.Td>
             </Table.Tr>
           )}
