@@ -6,3 +6,4 @@ Author-email: Cline <cline@example.com>
 Requires-Dist: requests
 Requires-Dist: fastapi
 Requires-Dist: uvicorn[standard]
+Requires-Dist: beautifulsoup4

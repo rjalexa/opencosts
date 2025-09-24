@@ -4,7 +4,9 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.backend
     ports:
-      - "8000:8000"
+      - "44400:44400"
+    env_file:
+      - ../.env
     environment:
       - PYTHONPATH=/app/src
     volumes:
@@ -17,7 +19,9 @@ services:
       context: ../frontend
       dockerfile: ../docker/Dockerfile.frontend
     ports:
-      - "5173:5173"
+      - "44401:44401"
+    env_file:
+      - ../.env
     depends_on:
       - backend
 

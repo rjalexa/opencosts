@@ -54,6 +54,7 @@ async def refresh_data():
                     "Price/output token",
                     "Latency",
                     "Throughput",
+                    "Creation date",
                 ]
             )
             for r in rows:
@@ -68,6 +69,7 @@ async def refresh_data():
                         r.price_output_token,
                         r.latency,
                         r.throughput,
+                        r.creation_date,
                     ]
                 )
 
@@ -136,6 +138,7 @@ async def get_models():
                     else "",
                     "Latency": str(row.latency) if row.latency else "",
                     "Throughput": str(row.throughput) if row.throughput else "",
+                    "Creation date": row.creation_date or "",
                 }
             )
 
@@ -149,6 +152,7 @@ async def get_models():
                         "name": model_name,
                         "url": providers[0]["Model URL"],
                         "id": providers[0]["OpenRouter model ID"],
+                        "creation_date": providers[0]["Creation date"],
                         "providers": providers,
                     }
                 )
@@ -163,5 +167,7 @@ async def get_models():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("BACKEND_PORT", "44400"))
+    uvicorn.run(app, host="0.0.0.0", port=port)

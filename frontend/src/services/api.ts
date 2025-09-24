@@ -8,12 +8,14 @@ export interface Provider {
   'Price/output token': string;
   'Latency': string;
   'Throughput': string;
+  'Creation date': string;
 }
 
 export interface Model {
   name: string;
   url: string;
   id: string;
+  creation_date?: string;
   providers: Provider[];
 }
 
@@ -55,20 +57,38 @@ const parseCSVRow = (row: string): string[] => {
 export const fetchData = async (): Promise<Author[]> => {
   try {
     // First try to get data from the backend API
-    const response = await fetch('http://localhost:8000/models');
+    const response = await fetch('http://localhost:44400/models');
     if (response.ok) {
       const data = await response.json();
-      // Format the prices in the response
+      
+      // Helper function to parse date for sorting
+      const parseCreationDate = (dateStr: string): Date => {
+        if (!dateStr) return new Date(0); // Very old date for missing dates
+        try {
+          return new Date(dateStr);
+        } catch {
+          return new Date(0);
+        }
+      };
+      
+      // Format the prices in the response and sort models by creation date
       return data.map((author: Author) => ({
         ...author,
-        models: author.models.map(model => ({
-          ...model,
-          providers: model.providers.map(provider => ({
-            ...provider,
-            'Price/input token': formatPrice(provider['Price/input token']),
-            'Price/output token': formatPrice(provider['Price/output token'])
+        models: author.models
+          .map(model => ({
+            ...model,
+            providers: model.providers.map(provider => ({
+              ...provider,
+              'Price/input token': formatPrice(provider['Price/input token']),
+              'Price/output token': formatPrice(provider['Price/output token'])
+            }))
           }))
-        }))
+          .sort((a, b) => {
+            // Sort by creation date, newest first
+            const dateA = parseCreationDate(a.creation_date || '');
+            const dateB = parseCreationDate(b.creation_date || '');
+            return dateB.getTime() - dateA.getTime();
+          })
       }));
     }
   } catch (error) {
@@ -90,7 +110,8 @@ export const fetchData = async (): Promise<Author[]> => {
       priceInput,
       priceOutput,
       latency,
-      throughput
+      throughput,
+      creationDate
     ] = fields;
     
     return {
@@ -102,7 +123,8 @@ export const fetchData = async (): Promise<Author[]> => {
       'Price/input token': formatPrice(priceInput || '0'),
       'Price/output token': formatPrice(priceOutput || '0'),
       'Latency': latency || '',
-      'Throughput': throughput || ''
+      'Throughput': throughput || '',
+      'Creation date': creationDate || ''
     };
   });
 
@@ -122,13 +144,31 @@ export const fetchData = async (): Promise<Author[]> => {
     authors[authorName][modelName].push(provider);
   });
 
+  // Helper function to parse date for sorting
+  const parseCreationDate = (dateStr: string): Date => {
+    if (!dateStr) return new Date(0); // Very old date for missing dates
+    try {
+      return new Date(dateStr);
+    } catch {
+      return new Date(0);
+    }
+  };
+
   return Object.entries(authors).map(([authorName, models]) => ({
     name: authorName,
-    models: Object.entries(models).map(([modelName, providers]) => ({
-      name: modelName,
-      url: providers[0]['Model URL'],
-      id: providers[0]['OpenRouter model ID'],
-      providers,
-    })),
+    models: Object.entries(models)
+      .map(([modelName, providers]) => ({
+        name: modelName,
+        url: providers[0]['Model URL'],
+        id: providers[0]['OpenRouter model ID'],
+        creation_date: providers[0]['Creation date'],
+        providers,
+      }))
+      .sort((a, b) => {
+        // Sort by creation date, newest first
+        const dateA = parseCreationDate(a.creation_date || '');
+        const dateB = parseCreationDate(b.creation_date || '');
+        return dateB.getTime() - dateA.getTime();
+      }),
   }));
 };

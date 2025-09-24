@@ -28,6 +28,6 @@ COPY data/ ./data/
 # Create output directories
 RUN mkdir -p frontend/public
 
-EXPOSE 8000
+EXPOSE 44400
 
-CMD ["python", "src/main.py"]
+CMD ["python", "src/api.py"]

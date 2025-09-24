@@ -1,4 +1,4 @@
-import { Card, Title, Anchor, Stack } from '@mantine/core';
+import { Card, Title, Anchor, Stack, Group, Text } from '@mantine/core';
 import type { Model } from '../../services/api';
 import ProviderTable from './ProviderTable';
 
@@ -10,7 +10,14 @@ const ModelCard = ({ model }: Props) => {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Stack gap="md">
-        <Title order={3}>{model.name}</Title>
+        <Group justify="space-between" align="flex-start">
+          <Title order={3} style={{ flex: 1 }}>{model.name}</Title>
+          {model.creation_date && (
+            <Text size="sm" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
+              Created {model.creation_date}
+            </Text>
+          )}
+        </Group>
         <Anchor href={model.url} target="_blank" rel="noopener noreferrer">
           {model.url}
         </Anchor>

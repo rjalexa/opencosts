@@ -6,6 +6,8 @@ from typing import Iterable, List, Dict, Any
 import requests
 from urllib.parse import quote
 import os
+import re
+from bs4 import BeautifulSoup
 
 BASE = "https://openrouter.ai"
 LIST_MODELS_URL = f"{BASE}/api/v1/models"
@@ -36,6 +38,7 @@ class ModelHit:
     name: str
     model_id: str
     canonical_slug: str
+    creation_date: str | None = None
 
     @property
     def url(self) -> str:
@@ -56,6 +59,7 @@ class ProviderRow:
     price_output_token: str | None
     latency: float | None  # not currently available via API
     throughput: float | None  # not currently available via API
+    creation_date: str | None = None
 
 
 # ---- helpers ----
@@ -86,6 +90,34 @@ def _list_endpoints(canonical_slug: str) -> List[Dict[str, Any]]:
     return _fetch_json(url)["data"]["endpoints"]
 
 
+def _fetch_creation_date(canonical_slug: str) -> str | None:
+    """Fetch the creation date from a model's detail page."""
+    try:
+        # Build the model detail page URL
+        author, slug = canonical_slug.split("/", 1)
+        url = f"{BASE}/{author}/{quote(slug, safe='')}"
+        
+        # Fetch the HTML page
+        response = requests.get(url, timeout=30)
+        response.raise_for_status()
+        
+        # Parse HTML to find the creation date
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # Look for text containing "Created "
+        # The pattern is: "Created Sep 23, 2025"
+        text = soup.get_text()
+        match = re.search(r'Created\s+([A-Za-z]{3}\s+\d{1,2},\s+\d{4})', text)
+        
+        if match:
+            return match.group(1)  # Return just the date part (e.g., "Sep 23, 2025")
+        
+        return None
+    except Exception as e:
+        print(f"Warning: Could not fetch creation date for {canonical_slug}: {e}")
+        return None
+
+
 # ---- main API ----
 def find_models_by_name_parts(parts: Iterable[str]) -> List[ModelHit]:
     hits: List[ModelHit] = []
@@ -96,6 +128,7 @@ def find_models_by_name_parts(parts: Iterable[str]) -> List[ModelHit]:
             continue
         slug = m.get("canonical_slug") or m["id"].split(":")[0]
         hits.append(ModelHit(name=m["name"], model_id=m["id"], canonical_slug=slug))
+    
     # optional: de‑dupe by model_id
     seen = set()
     unique = []
@@ -104,7 +137,22 @@ def find_models_by_name_parts(parts: Iterable[str]) -> List[ModelHit]:
             continue
         seen.add(h.model_id)
         unique.append(h)
-    return unique
+    
+    # Fetch creation dates for all unique models
+    def fetch_creation_date_for_model(model_hit: ModelHit) -> ModelHit:
+        creation_date = _fetch_creation_date(model_hit.canonical_slug)
+        return ModelHit(
+            name=model_hit.name,
+            model_id=model_hit.model_id,
+            canonical_slug=model_hit.canonical_slug,
+            creation_date=creation_date
+        )
+    
+    # Use threading to fetch creation dates in parallel
+    with cf.ThreadPoolExecutor(max_workers=8) as pool:
+        unique_with_dates = list(pool.map(fetch_creation_date_for_model, unique))
+    
+    return unique_with_dates
 
 
 def expand_providers(models: Iterable[ModelHit]) -> List[ProviderRow]:
@@ -134,6 +182,7 @@ def expand_providers(models: Iterable[ModelHit]) -> List[ProviderRow]:
                         # These are not in the documented API as of 2025‑07‑26; leave None.
                         latency=ep.get("latency") if "latency" in ep else None,
                         throughput=ep.get("throughput") if "throughput" in ep else None,
+                        creation_date=h.creation_date,
                     )
                 )
         return out
@@ -179,6 +228,7 @@ if __name__ == "__main__":
                 "Price/output token",
                 "Latency",
                 "Throughput",
+                "Creation date",
             ]
         )
         for r in rows:
@@ -193,5 +243,6 @@ if __name__ == "__main__":
                     r.price_output_token,
                     r.latency,
                     r.throughput,
+                    r.creation_date,
                 ]
             )
