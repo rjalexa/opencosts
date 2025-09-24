@@ -31,17 +31,17 @@ run:
 	echo "🎨 Step 3: Building and starting frontend service..." && \
 	docker compose up -d frontend --build && \
 	for i in $$(seq 1 30); do \
-		if curl -s http://localhost:5173 > /dev/null; then \
+		if curl -s http://localhost:44401 > /dev/null; then \
 			echo "✅ Frontend is now running!"; \
 			break; \
 		fi; \
 		echo "⏳ Waiting for frontend to start... ($$i/30)"; \
 		sleep 1; \
 	done; \
-	open http://localhost:5173
+	open http://localhost:44401
 	@echo "🌐 Application is now running!"
-	@echo "   Backend API: http://localhost:8000"
-	@echo "   Frontend UI: http://localhost:5173"
+	@echo "   Backend API: http://localhost:44400"
+	@echo "   Frontend UI: http://localhost:44401"
 	@echo ""
 	@echo "📋 To view logs:"
 	@echo "   Backend logs:  docker compose logs backend -f"

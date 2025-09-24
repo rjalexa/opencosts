@@ -2,11 +2,14 @@ import { Accordion, Stack, Badge, Group, Text } from '@mantine/core';
 import type { Author } from '../../services/api';
 import ModelCard from './ModelCard';
 
+import type { Model } from '../../services/api';
+
 interface Props {
   author: Author;
+  comparisonModel: Model | null;
 }
 
-const AuthorCard = ({ author }: Props) => {
+const AuthorCard = ({ author, comparisonModel }: Props) => {
   return (
     <Accordion>
       <Accordion.Item value={author.name}>
@@ -23,7 +26,7 @@ const AuthorCard = ({ author }: Props) => {
         <Accordion.Panel>
           <Stack gap="md">
             {author.models.map(model => (
-              <ModelCard key={model.id} model={model} />
+              <ModelCard key={model.id} model={model} comparisonModel={comparisonModel} />
             ))}
           </Stack>
         </Accordion.Panel>

@@ -57,7 +57,8 @@ const parseCSVRow = (row: string): string[] => {
 export const fetchData = async (): Promise<Author[]> => {
   try {
     // First try to get data from the backend API
-    const response = await fetch('http://localhost:44400/models');
+    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:44400';
+    const response = await fetch(`${backendUrl}/models`);
     if (response.ok) {
       const data = await response.json();
       

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Container, Title, Loader, Center, Stack } from '@mantine/core';
 import { fetchData } from './services/api';
-import type { Author } from './services/api';
+import type { Author, Model } from './services/api';
 import AuthorCard from './components/common/AuthorCard';
+import ModelComparisonCard from './components/common/ModelComparisonCard';
 
 function App() {
   const [data, setData] = useState<Author[]>([]);
   const [loading, setLoading] = useState(true);
+  const [comparisonModel, setComparisonModel] = useState<Model | null>(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -32,8 +34,12 @@ function App() {
       ) : (
         <Stack gap="md">
           {data.map(author => (
-            <AuthorCard key={author.name} author={author} />
+            <AuthorCard key={author.name} author={author} comparisonModel={comparisonModel} />
           ))}
+          <ModelComparisonCard
+            authors={data}
+            onComparisonModelChange={setComparisonModel}
+          />
         </Stack>
       )}
     </Container>

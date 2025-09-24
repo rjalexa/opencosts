@@ -4,9 +4,10 @@ import ProviderTable from './ProviderTable';
 
 interface Props {
   model: Model;
+  comparisonModel: Model | null;
 }
 
-const ModelCard = ({ model }: Props) => {
+const ModelCard = ({ model, comparisonModel }: Props) => {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Stack gap="md">
@@ -21,7 +22,7 @@ const ModelCard = ({ model }: Props) => {
         <Anchor href={model.url} target="_blank" rel="noopener noreferrer">
           {model.url}
         </Anchor>
-        <ProviderTable providers={model.providers} />
+        <ProviderTable providers={model.providers} comparisonModel={comparisonModel} />
       </Stack>
     </Card>
   );
