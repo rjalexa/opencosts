@@ -33,11 +33,11 @@ sudo tee -a /etc/caddy/Caddyfile << 'EOF'
 opencosts.isagog.com, www.opencosts.isagog.com {
         import opencosts_security
 
-        # API routes - proxy to backend running on localhost:8000
+        # API routes - proxy to backend container running on localhost:44400
         handle /api/* {
-                # Strip /api prefix and proxy to local backend
+                # Strip /api prefix and proxy to backend container
                 uri strip_prefix /api
-                reverse_proxy localhost:8000 {
+                reverse_proxy localhost:44400 {
                         header_up Host {host}
                         header_up X-Real-IP {remote_host}
                 }
@@ -45,17 +45,17 @@ opencosts.isagog.com, www.opencosts.isagog.com {
 
         # Health check endpoint
         handle /health {
-                reverse_proxy localhost:8000
+                reverse_proxy localhost:44400
         }
 
         # CSV download endpoint
         handle /csv {
-                reverse_proxy localhost:8000 {
+                reverse_proxy localhost:44400 {
                         header_down Content-Disposition "attachment; filename=openrouter_models.csv"
                 }
         }
 
-        # Static files and frontend - proxy to frontend running on localhost:44401
+        # Static files and frontend - proxy to frontend container running on localhost:44401
         handle {
                 reverse_proxy localhost:44401 {
                         header_up Host {host}
@@ -107,15 +107,14 @@ sudo mkdir -p /var/log/caddy
 sudo chown caddy:caddy /var/log/caddy 2>/dev/null || sudo chown $USER:$USER /var/log/caddy
 ```
 
-## Step 7: Start Your Services
+## Step 7: Start Your Container Services
 ```bash
-# Terminal 1: Start backend
+# Start containers with Docker Compose
 cd ~/code/opencosts
-make run
+docker compose -f docker/docker-compose.prod.yml up -d --build
 
-# Terminal 2: Start frontend  
-cd ~/code/opencosts/frontend
-pnpm dev
+# Check container status
+docker compose -f docker/docker-compose.prod.yml ps
 ```
 
 ## Troubleshooting
@@ -126,8 +125,9 @@ pnpm dev
 3. Verify no other processes use port 80/443
 
 ### If Services Don't Start:
-- Backend: Check port 8000 is available with `lsof -i :8000`
+- Backend: Check port 44400 is available with `lsof -i :44400`
 - Frontend: Check port 44401 is available with `lsof -i :44401`
+- Containers: Check `docker compose -f docker/docker-compose.prod.yml logs`
 
 ### Check Logs:
 ```bash
@@ -137,5 +137,6 @@ sudo journalctl -u caddy -f
 # OpenCosts specific logs
 tail -f /var/log/caddy/opencosts.log
 
-# Frontend logs (in terminal where pnpm dev is running)
-# Backend logs (in terminal where make run is running)
+# Container logs
+docker compose -f docker/docker-compose.prod.yml logs -f backend
+docker compose -f docker/docker-compose.prod.yml logs -f frontend

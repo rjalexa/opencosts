@@ -4,7 +4,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.backend
     ports:
-      - "8000:8000"
+      - "44400:44400"
     env_file:
       - ../.env.prod
     environment:
@@ -14,10 +14,10 @@ services:
       - ../data:/app/data
       - ../frontend/public:/app/frontend/public
       - /var/log/opencosts:/app/logs
-    command: uvicorn src.api:app --host 0.0.0.0 --port 8000 --workers 2
+    command: uvicorn src.api:app --host 0.0.0.0 --port 44400 --workers 2
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:44400/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -28,7 +28,7 @@ services:
       context: ../frontend
       dockerfile: ../docker/Dockerfile.frontend
     ports:
-      - "5173:5173"
+      - "44401:44401"
     env_file:
       - ../.env.prod
     environment:
@@ -37,27 +37,13 @@ services:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      test: ["CMD", "curl", "-f", "http://localhost:44401"]
       interval: 30s
       timeout: 10s
       retries: 3
 
-  caddy:
-    image: caddy:2-alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
-      - /var/log/caddy:/var/log/caddy
-    depends_on:
-      - backend
-      - frontend
-    restart: unless-stopped
-    environment:
-      - CADDY_ADMIN=0.0.0.0:2019
+  # Caddy service removed - using system-wide Caddy instead
+  # System Caddy will proxy to localhost:44400 (backend) and localhost:44401 (frontend)
 
   scraper:
     build:
@@ -76,8 +62,6 @@ services:
       - scraper  # Only start when explicitly called
 
 volumes:
-  caddy_data:
-  caddy_config:
   log_data:
 
 networks:
