@@ -1,8 +1,8 @@
 # OpenCosts System-wide Caddyfile Configuration
 # This configuration is designed to be added to an existing system-wide Caddy
 
-# Snippet for common security headers
-(security) {
+# Snippet for OpenCosts security headers (renamed to avoid conflicts)
+(opencosts_security) {
         header {
                 X-Frame-Options "SAMEORIGIN"
                 X-XSS-Protection "1; mode=block"
@@ -14,7 +14,7 @@
 
 # OpenCosts main site
 opencosts.isagog.com, www.opencosts.isagog.com {
-        import security
+        import opencosts_security
 
         # API routes - proxy to backend running on localhost:8000
         handle /api/* {
