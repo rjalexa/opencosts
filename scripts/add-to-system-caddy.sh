@@ -62,15 +62,26 @@ else
     exit 1
 fi
 
-# Reload Caddy
+# Reload Caddy with timeout
 echo "🔄 Reloading Caddy configuration..."
 if systemctl is-active --quiet caddy; then
-    systemctl reload caddy
-    echo "✅ Caddy configuration reloaded successfully"
+    echo "   Caddy is running, attempting reload with timeout..."
+    if timeout 30 systemctl reload caddy; then
+        echo "✅ Caddy configuration reloaded successfully"
+    else
+        echo "⚠️  Caddy reload timed out or failed. You may need to restart manually:"
+        echo "   sudo systemctl restart caddy"
+        echo "   Check status with: sudo systemctl status caddy"
+    fi
 else
     echo "⚠️  Caddy service is not running. Starting Caddy..."
-    systemctl start caddy
-    echo "✅ Caddy service started"
+    if timeout 30 systemctl start caddy; then
+        echo "✅ Caddy service started"
+    else
+        echo "⚠️  Caddy start timed out or failed. You may need to start manually:"
+        echo "   sudo systemctl start caddy"
+        echo "   Check logs with: sudo journalctl -u caddy -f"
+    fi
 fi
 
 # Create log directory

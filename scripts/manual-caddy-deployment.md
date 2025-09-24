@@ -1,5 +1,22 @@
-# OpenCosts System-wide Caddyfile Configuration
-# This configuration is designed to be added to an existing system-wide Caddy
+# Manual OpenCosts Caddy Deployment
+
+If the automated script hangs or fails, you can manually add OpenCosts to your system Caddy:
+
+## Step 1: Backup Existing Configuration
+```bash
+sudo cp /etc/caddy/Caddyfile /etc/caddy/Caddyfile.backup.$(date +%Y%m%d_%H%M%S)
+```
+
+## Step 2: Add OpenCosts Configuration
+Append the contents of `docker/Caddyfile.system` to your system Caddyfile:
+
+```bash
+# Add a separator comment
+echo "" | sudo tee -a /etc/caddy/Caddyfile
+echo "# OpenCosts Configuration - Added $(date)" | sudo tee -a /etc/caddy/Caddyfile
+
+# Append the OpenCosts config (skip the global options and just add the site config)
+sudo tee -a /etc/caddy/Caddyfile << 'EOF'
 
 # Snippet for OpenCosts security headers (renamed to avoid conflicts)
 (opencosts_security) {
@@ -64,3 +81,61 @@ opencosts.isagog.com, www.opencosts.isagog.com {
 costs.isagog.com {
         redir https://opencosts.isagog.com{uri}
 }
+EOF
+```
+
+## Step 3: Validate Configuration
+```bash
+sudo caddy validate --config /etc/caddy/Caddyfile
+```
+
+## Step 4: Restart Caddy (if reload hangs)
+If `systemctl reload caddy` hangs, use restart instead:
+```bash
+sudo systemctl restart caddy
+```
+
+## Step 5: Check Status
+```bash
+sudo systemctl status caddy
+sudo journalctl -u caddy -f
+```
+
+## Step 6: Create Log Directory
+```bash
+sudo mkdir -p /var/log/caddy
+sudo chown caddy:caddy /var/log/caddy 2>/dev/null || sudo chown $USER:$USER /var/log/caddy
+```
+
+## Step 7: Start Your Services
+```bash
+# Terminal 1: Start backend
+cd ~/code/opencosts
+make run
+
+# Terminal 2: Start frontend  
+cd ~/code/opencosts/frontend
+pnpm dev
+```
+
+## Troubleshooting
+
+### If SSL/TLS Issues Occur:
+1. Ensure DNS points to your server
+2. Check firewall allows ports 80/443
+3. Verify no other processes use port 80/443
+
+### If Services Don't Start:
+- Backend: Check port 8000 is available with `lsof -i :8000`
+- Frontend: Check port 44401 is available with `lsof -i :44401`
+
+### Check Logs:
+```bash
+# Caddy logs
+sudo journalctl -u caddy -f
+
+# OpenCosts specific logs
+tail -f /var/log/caddy/opencosts.log
+
+# Frontend logs (in terminal where pnpm dev is running)
+# Backend logs (in terminal where make run is running)
