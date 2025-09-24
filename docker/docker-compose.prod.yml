@@ -1,0 +1,85 @@
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../.env.prod
+    environment:
+      - PYTHONPATH=/app/src
+      - APP_ENV=production
+    volumes:
+      - ../data:/app/data
+      - ../frontend/public:/app/frontend/public
+      - /var/log/opencosts:/app/logs
+    command: uvicorn src.api:app --host 0.0.0.0 --port 8000 --workers 2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - ../.env.prod
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - /var/log/caddy:/var/log/caddy
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+    environment:
+      - CADDY_ADMIN=0.0.0.0:2019
+
+  scraper:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    command: python src/main.py
+    volumes:
+      - ../data:/app/data
+      - ../frontend/public:/app/frontend/public
+      - /var/log/opencosts:/app/logs
+    environment:
+      - PYTHONPATH=/app/src
+      - APP_ENV=production
+    restart: "no"  # Run manually or via cron
+    profiles:
+      - scraper  # Only start when explicitly called
+
+volumes:
+  caddy_data:
+  caddy_config:
+  log_data:
+
+networks:
+  default:
+    name: opencosts_prod

@@ -1,0 +1,101 @@
+# OpenCosts Caddyfile for Production Deployment
+
+# Global options - Update email to your admin email
+{
+        email admin@your-domain.com
+        admin localhost:2019
+}
+
+# Snippet for common security headers
+(security) {
+        header {
+                X-Frame-Options "SAMEORIGIN"
+                X-XSS-Protection "1; mode=block"
+                X-Content-Type-Options "nosniff"
+                Referrer-Policy "no-referrer-when-downgrade"
+                Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        }
+}
+
+# Rate limiting snippet
+(rate_limit) {
+        rate_limit {
+                zone api {
+                        key {remote_host}
+                        events 100
+                        window 1m
+                }
+                zone general {
+                        key {remote_host}
+                        events 1000
+                        window 1m
+                }
+        }
+}
+
+# OpenCosts main site
+your-domain.com, www.your-domain.com {
+        import security
+        import rate_limit
+
+        # API routes with rate limiting
+        handle /api/* {
+                # Apply stricter rate limiting to API
+                rate_limit api
+
+                # Strip /api prefix and proxy to backend
+                uri strip_prefix /api
+                reverse_proxy backend:8000 {
+                        header_up Host {host}
+                        header_up X-Real-IP {remote_host}
+                        header_up X-Forwarded-For {remote_host}
+                        header_up X-Forwarded-Proto {scheme}
+                }
+        }
+
+        # Health check endpoint (no rate limiting for monitoring)
+        handle /health {
+                reverse_proxy backend:8000
+        }
+
+        # CSV download endpoint
+        handle /csv {
+                reverse_proxy backend:8000 {
+                        header_down Content-Disposition "attachment; filename=openrouter_models.csv"
+                }
+        }
+
+        # Static files and frontend with general rate limiting
+        handle {
+                rate_limit general
+                
+                reverse_proxy frontend:5173 {
+                        header_up Host {host}
+                        header_up X-Real-IP {remote_host}
+                        header_up X-Forwarded-For {remote_host}
+                        header_up X-Forwarded-Proto {scheme}
+                        
+                        # Enable WebSocket support for development/HMR
+                        header_up Connection {>Connection}
+                        header_up Upgrade {>Upgrade}
+                }
+        }
+
+        # Logging
+        log {
+                output file /var/log/caddy/opencosts.log {
+                        roll_size 100mb
+                        roll_keep 5
+                        roll_keep_for 720h
+                }
+        }
+}
+
+# Optional: Redirect from alternative domains
+costs.your-domain.com {
+        redir https://your-domain.com{uri}
+}
+
+opencosts.your-domain.com {
+        redir https://your-domain.com{uri}
+}
