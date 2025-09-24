@@ -70,13 +70,19 @@ if docker compose -f docker/docker-compose.prod.yml run --rm scraper python src/
     log "Data scraping completed successfully"
     
     # Check if CSV file was generated
-    CSV_FILE="frontend/public/openrouter_models_providers.csv"
+    CSV_FILE="$PROJECT_DIR/frontend/public/openrouter_models_providers.csv"
     if [ -f "$CSV_FILE" ]; then
         LINES=$(wc -l < "$CSV_FILE")
         log "Generated CSV with $LINES lines"
         
+        # Copy fresh data to output directory
+        OUTPUT_CSV="$PROJECT_DIR/data/output/openrouter_models_providers.csv"
+        mkdir -p "$(dirname "$OUTPUT_CSV")"
+        cp "$CSV_FILE" "$OUTPUT_CSV"
+        log "Copied fresh data to $OUTPUT_CSV"
+        
         # Create backup
-        BACKUP_DIR="data/backups"
+        BACKUP_DIR="$PROJECT_DIR/data/backups"
         mkdir -p "$BACKUP_DIR"
         BACKUP_FILE="$BACKUP_DIR/openrouter_models_$(date +%Y%m%d_%H%M%S).csv"
         cp "$CSV_FILE" "$BACKUP_FILE"
