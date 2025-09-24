@@ -101,9 +101,10 @@ REQUEST_TIMEOUT=30
 The [`docker/Caddyfile`](docker/Caddyfile) provides:
 - Automatic HTTPS with Let's Encrypt certificates
 - Reverse proxy to backend/frontend
-- Rate limiting and security headers
+- Security headers (HSTS, XSS protection, etc.)
 - WebSocket support for development
 - Automatic HTTP to HTTPS redirects
+- Structured logging with log rotation
 
 Update domain references:
 ```bash
@@ -294,7 +295,7 @@ redis:
 - [ ] Firewall configured (ports 80, 443, 2019 for Caddy admin)
 - [ ] Regular security updates scheduled
 - [ ] Strong passwords and SSH key authentication
-- [ ] Rate limiting enabled in Caddyfile
+- [ ] Security headers configured in Caddyfile
 - [ ] Log monitoring setup
 - [ ] Backup procedures verified
 - [ ] CORS origins restricted to your domain

@@ -2,7 +2,7 @@
 
 # Global options - Update email to your admin email
 {
-        email admin@your-domain.com
+        email bob@isagog.com
         admin localhost:2019
 }
 
@@ -17,32 +17,12 @@
         }
 }
 
-# Rate limiting snippet
-(rate_limit) {
-        rate_limit {
-                zone api {
-                        key {remote_host}
-                        events 100
-                        window 1m
-                }
-                zone general {
-                        key {remote_host}
-                        events 1000
-                        window 1m
-                }
-        }
-}
-
 # OpenCosts main site
-your-domain.com, www.your-domain.com {
+opencosts.isagog.com, www.opencosts.isagog.com {
         import security
-        import rate_limit
 
-        # API routes with rate limiting
+        # API routes
         handle /api/* {
-                # Apply stricter rate limiting to API
-                rate_limit api
-
                 # Strip /api prefix and proxy to backend
                 uri strip_prefix /api
                 reverse_proxy backend:8000 {
@@ -53,7 +33,7 @@ your-domain.com, www.your-domain.com {
                 }
         }
 
-        # Health check endpoint (no rate limiting for monitoring)
+        # Health check endpoint
         handle /health {
                 reverse_proxy backend:8000
         }
@@ -65,10 +45,8 @@ your-domain.com, www.your-domain.com {
                 }
         }
 
-        # Static files and frontend with general rate limiting
+        # Static files and frontend
         handle {
-                rate_limit general
-                
                 reverse_proxy frontend:5173 {
                         header_up Host {host}
                         header_up X-Real-IP {remote_host}
@@ -92,10 +70,6 @@ your-domain.com, www.your-domain.com {
 }
 
 # Optional: Redirect from alternative domains
-costs.your-domain.com {
-        redir https://your-domain.com{uri}
-}
-
-opencosts.your-domain.com {
-        redir https://your-domain.com{uri}
+costs.isagog.com {
+        redir https://opencosts.isagog.com{uri}
 }
