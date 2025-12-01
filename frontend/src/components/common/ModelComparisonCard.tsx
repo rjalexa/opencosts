@@ -64,7 +64,7 @@ const ModelComparisonCard = ({ authors, onComparisonModelChange }: Props) => {
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Group justify="space-between" align="flex-start">
-        <Text size="lg" fw={500}>Compare Models</Text>
+        <Text size="lg" fw={500}>Compare Model Cost vs the following</Text>
       </Group>
       <Group mt="md">
         <Select
